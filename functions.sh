@@ -19,10 +19,7 @@ function_defined(){
     return 2
   fi
 
-  type "${1}" | head -n1 | grep -q 'is a function'
-  retval=$?
-
-  if [[ ${retval} == 0 ]]; then
+  if [[ $(type -t "${1}" 2>/dev/null) == function ]]; then
     echo "true"
     return
   fi
