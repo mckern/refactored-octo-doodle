@@ -14,7 +14,7 @@ cpu_core_count(){
 }
 
 function_defined(){
-  if [[ ${1:-UNDEFINED} == 'UNDEFINED' ]]; then
+  if [[ -z ${1} ]]; then
     echo 'no function name specified' >&2
     return 2
   fi
