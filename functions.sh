@@ -336,6 +336,19 @@ nameservers() {
   dig +short ns "${1}" | sort | tr "[:upper:]" "[:lower:]"
 }
 
+function realpath(){
+  if [[ -z "${1}" ]]; then
+    return 1
+  fi
+
+  if ! type -P realpath; then
+    python -c "import os; print(os.path.realpath('${1}'))"
+    return $?
+  fi
+
+  command realpath "${1}"
+}
+
 paths() {
   xargs -n1 -d: <<< "${PATH}" | awk '!x[$0]++'
 }
