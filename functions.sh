@@ -351,7 +351,7 @@ where(){
 
   local executable_path
 
-  while read -r path; do    
+  while read -r path; do
     executable_path="${path}/${name}"
 
     if [[ -x "${executable_path}" ]]; then
