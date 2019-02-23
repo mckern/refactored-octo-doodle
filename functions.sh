@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 cpu_core_count(){
-  if command -v nproc &>/dev/null; then
+  if type -P nproc &>/dev/null; then
     nproc
-  elif command -v sysctl &>/dev/null; then
+  elif type -P sysctl &>/dev/null; then
     sysctl -n hw.ncpu
   elif [[ -f /proc/cpuinfo ]]; then
     grep -c 'processor' /proc/cpuinfo
@@ -33,7 +33,7 @@ function_defined(){
 
 is_gnu(){
   # false if utility doesn't exist
-  if ! which "${1}" > /dev/null 2>&1; then
+  if ! type -P "${1}" > /dev/null 2>&1; then
     echo "false"
     return 1
   fi
@@ -115,11 +115,11 @@ notify(){
 }
 
 error(){
-  notify "${1}" >&2
+  notify "ERROR: ${1}" >&2
 }
 
 abort(){
-  notify "${__self}: ${1}" >&2
+  notify "FATAL: ${1}" >&2
   exit 1
 }
 
@@ -143,8 +143,8 @@ trim_trailing(){
 }
 
 uri_path() {
-  if ( ! command -v realpath &>/dev/null ); then
-    echo "ERROR: ${FUNCNAME} requires the 'realpath' command exist in the PATH" >&2
+  if ( ! type -P realpath &>/dev/null ); then
+    echo "ERROR: ${FUNCNAME[0]} requires the 'realpath' command exist in the PATH" >&2
     return 1
   fi
 
@@ -152,7 +152,7 @@ uri_path() {
   file_path="${1:-UNSET}"
 
   if [[ ${file_path} == 'UNSET' ]]; then
-    echo "ERROR: ${FUNCNAME} requires a path" >&2
+    echo "ERROR: ${FUNCNAME[0]} requires a path" >&2
     return 1
   fi
 
@@ -162,28 +162,30 @@ uri_path() {
 
 # find dead symlinks in the current directory or $1
 deadlinks(){
-  local __path="${1:-./}"
-  find -L "${__path}" -type l -print
+  local path="${1:-./}"
+  find -L "${path}" -type l -print
 }
 
 # How old is a PID? This is a good approximation
 pid_dob() {
-  local __file="/proc/${1}"
+  local file="/proc/${1}"
 
-  if [ ! -d "${__file}" ]; then
+  if [ ! -d "${file}" ]; then
     echo "No such PID ${1} found" >&2
     return 1
   fi
 
-  local __mtime=$(stat "${__file}" | grep Modify | cut -f2- -d':' | sed -e 's/^ *//g' -e 's/ *$//g')
-  local __pretty=$(date -d "${__mtime}" '+%a %b %d, %r')
+  local mtime
+  mtime="$(stat "${file}" | grep Modify | cut -f2- -d':' | sed -e 's/^ *//g' -e 's/ *$//g')"
+  local pretty
+  pretty="$(date -d "${mtime}" '+%a %b %d, %r')"
 
-  echo "PID ${1} last modified ${__pretty}"
+  echo "PID ${1} last modified ${pretty}"
   return $?
 }
 
 uuidgen() {
-  if ( ! command -v uuidgen &>/dev/null ); then
+  if ( ! type -P uuidgen &>/dev/null ); then
     python -c 'import uuid; print str(uuid.uuid4())'
     return $?
   fi
@@ -199,8 +201,8 @@ to_upper() {
 }
 
 pretty_json() (
-  if ( ! command -v jq &>/dev/null ); then
-    echo "ERROR: ${FUNCNAME} requires the 'jq' command exist in the PATH" >&2
+  if ( ! type -P jq &>/dev/null ); then
+    echo "ERROR: ${FUNCNAME[0]} requires the 'jq' command exist in the PATH" >&2
     return 1
   fi
 
