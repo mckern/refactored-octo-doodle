@@ -336,7 +336,7 @@ nameservers() {
   dig +short ns "${1}" | sort | tr "[:upper:]" "[:lower:]"
 }
 
-function realpath(){
+realpath() {
   if [[ -z "${1}" ]]; then
     return 1
   fi
