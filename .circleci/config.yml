@@ -1,0 +1,19 @@
+version: 2.1
+
+orbs:
+  shellcheck: circleci/shellcheck@1.3.3
+
+workflows:
+  shellcheck:
+    jobs:
+      - shellcheck/check
+
+jobs:
+  rubocop_lint:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - checkout
+      - run:
+          name: Run RuboCop linting
+          command: rubocop --parallel --display-cop-names --display-style-guide
