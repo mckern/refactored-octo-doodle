@@ -1,3 +1,5 @@
+---
+
 version: 2.1
 
 orbs:
@@ -7,12 +9,16 @@ workflows:
   shellcheck:
     jobs:
       - shellcheck/check
+      - rubocop
 
 jobs:
   rubocop:
     docker:
       - image: circleci/ruby:2.6
     steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
       - run:
           name: Run RuboCop linting
-          command: rubocop --parallel --display-cop-names --display-style-guide
+          command: rubocop --parallel --display-cop-names --display-style-guide ~/repo
