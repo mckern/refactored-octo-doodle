@@ -9,7 +9,7 @@ workflows:
       - shellcheck/check
 
 jobs:
-  rubocop_lint:
+  rubocop:
     docker:
       - image: circleci/ruby:2.6
     steps:
