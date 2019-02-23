@@ -20,5 +20,8 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Installing Rubocop
+          command: gem install rubocop
+      - run:
           name: Run RuboCop linting
           command: rubocop --parallel --display-cop-names --display-style-guide ~/repo
