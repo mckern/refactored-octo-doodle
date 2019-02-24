@@ -17,9 +17,7 @@ jobs:
       - image: mckern/ruby:latest
     steps:
       - checkout
-      - attach_workspace:
-          at: /repo
       - run:
           name: Run RuboCop linting
           command: |
-            rubocop --parallel --display-cop-names --display-style-guide /repo
+            rubocop --parallel --display-cop-names --display-style-guide
