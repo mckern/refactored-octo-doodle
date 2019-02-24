@@ -26,8 +26,8 @@ jobs:
               --display-style-guide \
               --require rubocop/formatter/junit_formatter \
               --format progress \
-              --out /tmp/test-results/rubocop.xml \
-              --format RuboCop::Formatter::JUnitFormatter
+              --format RuboCop::Formatter::JUnitFormatter \
+              --out /tmp/test-results/rubocop.xml
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
