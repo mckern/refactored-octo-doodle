@@ -14,7 +14,7 @@ workflows:
 jobs:
   rubocop:
     docker:
-      - image: mckern/ruby:2.6-alpine
+      - image: mckern/ruby:latest
     steps:
       - checkout
       - attach_workspace:
