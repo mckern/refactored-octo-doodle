@@ -1,0 +1,19 @@
+---
+AllCops:
+  TargetRubyVersion: 2.3
+  DisplayCopNames: true
+
+Metrics/LineLength:
+  Enabled: false
+
+Style/CommandLiteral:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/RegexpLiteral:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes

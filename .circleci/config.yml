@@ -1,3 +1,5 @@
+---
+
 version: 2.1
 
 orbs:
@@ -7,3 +9,26 @@ workflows:
   shellcheck:
     jobs:
       - shellcheck/check
+      - rubocop
+
+jobs:
+  rubocop:
+    docker:
+      - image: mckern/ruby:latest
+    steps:
+      - checkout
+      - run:
+          name: Run RuboCop linting
+          command: |
+            rubocop \
+              --parallel \
+              --display-cop-names \
+              --display-style-guide \
+              --require rubocop/formatter/junit_formatter \
+              --format progress \
+              --format RuboCop::Formatter::JUnitFormatter \
+              --out /tmp/test-results/rubocop.xml
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
