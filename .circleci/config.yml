@@ -14,14 +14,12 @@ workflows:
 jobs:
   rubocop:
     docker:
-      - image: circleci/ruby:2.6
+      - image: mckern/ruby:2.6-alpine
     steps:
       - checkout
       - attach_workspace:
-          at: ~/repo
-      - run:
-          name: Installing Rubocop
-          command: gem install rubocop
+          at: /repo
       - run:
           name: Run RuboCop linting
-          command: rubocop --parallel --display-cop-names --display-style-guide ~/repo
+          command: |
+            rubocop --parallel --display-cop-names --display-style-guide /repo
