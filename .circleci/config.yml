@@ -7,12 +7,3 @@ workflows:
   shellcheck:
     jobs:
       - shellcheck/check
-
-jobs:
-  rubocop_lint:
-    docker:
-      - image: circleci/ruby:2.6
-    steps:
-      - run:
-          name: Run RuboCop linting
-          command: rubocop --parallel --display-cop-names --display-style-guide
