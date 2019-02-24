@@ -20,4 +20,15 @@ jobs:
       - run:
           name: Run RuboCop linting
           command: |
-            rubocop --parallel --display-cop-names --display-style-guide
+            rubocop \
+              --parallel \
+              --display-cop-names \
+              --display-style-guide \
+              --require rubocop/formatter/junit_formatter \
+              --format progress \
+              --out /tmp/test-results/rubocop.xml \
+              --format RuboCop::Formatter::JUnitFormatter
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
