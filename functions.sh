@@ -321,11 +321,20 @@ curl-md5sum(){
 }
 
 epoch(){
-  if [[ ${1:-UNSET} == "UNSET" ]]; then
-    date '+%s'
-  else
-    /usr/bin/ruby -rdate -e "puts Date.parse('${1}').strftime('%s')"
+  if [[ -z "${1}" ]]; then
+    if type -P date &> /dev/null; then
+      date '+%s'
+      return $?
+    fi
   fi
+
+  if type -p ruby &> /dev/null; then
+    ruby -rdate -e "puts Date.parse('${1}').strftime('%s')"
+    return $?
+  fi
+
+  error "unable to print epoch (no \`date\` or \`ruby\` found in PATH)"
+  return 1
 }
 
 mx() {
