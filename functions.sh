@@ -321,10 +321,84 @@ curl-md5sum(){
 }
 
 epoch(){
-  if [[ ${1:-UNSET} == "UNSET" ]]; then
-    date '+%s'
+  if [[ -z "${1}" ]] && [[ -t 0 ]]; then
+    if type -P date &> /dev/null; then
+      date '+%s'
+      return $?
+    fi
+  fi
+
+  local datestamp
+  if [[ -n "${1}" ]]; then
+    datestamp="${1}"
+  elif ! [[ -t 0 ]]; then
+    read -r datestamp
+  fi
+
+  if type -p ruby &> /dev/null; then
+    ruby -rdate -e "puts Date.parse('${datestamp}').strftime('%s')"
+    return $?
+  fi
+
+  error "unable to print epoch (no \`date\` or \`ruby\` found in PATH)"
+  return 1
+}
+
+port() {
+  if [[ $1 =~ :([[:digit:]]+) ]]; then
+    echo ${BASH_REMATCH[1]}
+    return $?
+  fi
+
+  echo "no port found" >&2
+  return 1
+}
+
+ssl_expiry() (
+  set -e
+  set -o pipefail
+
+  local domain
+  local port
+
+  domain="$(echo "${1}" | cut -f1 -d:)"
+  port=$(port "${1}" 2>/dev/null || echo 443)
+
+  if [[ -z "${1}" ]]; then
+    echo "ssl_expiry <domain>:<port>" >&2
+    echo "             port is optional; 443 is assumed" >&2
+  fi
+
+  echo QUIT |
+  openssl s_client -connect "${domain}:${port}" -servername "${domain}" 2>/dev/null |
+  openssl x509 -noout -dates | 
+  grep "notAfter" |
+  cut -f2 -d=
+)
+
+ssl_expired()(
+  set -e
+  set -o pipefail
+
+  local datestamp
+  datestamp="$(ssl_expiry "${1}" | epoch)"
+
+  if [[ ${datestamp} -le $(date '+%s') ]]; then
+    echo "true"
+    return 0
   else
-    /usr/bin/ruby -rdate -e "puts Date.parse('${1}').strftime('%s')"
+    echo "false"
+    return 1
+  fi
+)
+
+ssl_valid() {
+  if ! ssl_expired "${1}" &>/dev/null; then
+    echo "true"
+    return 0
+  else
+    echo "false"
+    return 1
   fi
 }
 
